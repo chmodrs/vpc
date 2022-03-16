@@ -1,2 +1,2 @@
-# mpce-poc-vpc
+poc-vpc
 
