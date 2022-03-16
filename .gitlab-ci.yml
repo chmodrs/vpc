@@ -1,0 +1,45 @@
+image:
+  name: hashicorp/terraform:light
+  entrypoint:
+    - '/usr/bin/env'
+    - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+
+before_script:
+  - sh startup.sh
+
+stages:
+  - validate
+  - refresh
+  - plan
+  - apply
+  
+validate:
+  stage: validate
+  script:
+    - terraform validate
+    
+refresh:
+  stage: refresh
+  script:
+    - terraform refresh
+  dependencies:
+    - validate
+
+plan:
+  stage: plan
+  script:
+    - terraform plan -out "planfile"
+  dependencies:
+    - refresh
+  artifacts:
+    paths:
+      - planfile
+
+apply:
+  stage: apply
+  script:
+    - terraform apply -input=false "planfile"
+  dependencies:
+    - plan
+  when: manual
+
